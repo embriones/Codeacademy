@@ -1,0 +1,273 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1561\cocoasubrtf600
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww12740\viewh21600\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 import codecademylib\
+import pandas as pd\
+from matplotlib import pyplot as plt\
+\
+##Biodiversity Project Part 1 \
+\
+# Loading the Data\
+species = pd.read_csv('species_info.csv')\
+\
+print species\
+print species.head()\
+print species.info()\
+\
+category = species.category\
+category_count = species.category.nunique()\
+category_species = species["category"].value_counts()\
+print category_species\
+\
+# Inspecting the DataFrame - Conservation Status (Columns - Endangered, In Recovery, Species of Concern, and Threatened)\
+\
+species_count = species.scientific_name.nunique()\
+\
+species_type = species.category.unique()\
+\
+conservation_statuses = species.conservation_status.unique()\
+\
+count_of_species = species["category"].value_counts()\
+\
+print count_of_species\
+\
+\
+# Analyze Species Conservation Status\
+conservation_counts = species.groupby('conservation_status').scientific_name.nunique().reset_index()\
+\
+print conservation_counts\
+\
+species.fillna('No Intervention', inplace = True)\
+\
+conservation_counts_fixed = species.groupby('conservation_status').scientific_name.nunique().reset_index()\
+\
+print conservation_counts\
+\
+species.fillna('No Intervention', inplace = True)\
+\
+conservation_counts_fixed = species.groupby('conservation_status').scientific_name.nunique().reset_index()\
+\
+\
+\
+#Plotting Conservation Status by Species \
+species = pd.read_csv('species_info.csv')\
+\
+species.fillna('No Intervention', inplace = True)\
+\
+protection_counts = species.groupby('conservation_status')\\\
+    .scientific_name.nunique().reset_index()\\\
+    .sort_values(by='scientific_name')\
+\
+plt.figure(figsize=(10, 4))\
+ax = plt.subplot()\
+plt.bar(range(len(protection_counts)),protection_counts.scientific_name.values)\
+ax.set_xticks(range(len(protection_counts)))\
+ax.set_xticklabels(protection_counts.conservation_status.values)\
+plt.ylabel('Number of Species')\
+plt.title('Conservation Status by Species')\
+plt.show()\
+\
+\
+\
+#Investigating Endangered Species \
+\
+species['is_protected'] = species.conservation_status != 'No Intervention'\
+\
+category_counts = species.groupby(['category', 'is_protected']).scientific_name.nunique().reset_index()\
+\
+category_pivot = category_counts.pivot(columns='is_protected',\
+                      index='category',\
+                      values='scientific_name')\\\
+                      .reset_index()\
+\
+category_pivot = category_counts.pivot(columns='is_protected',\
+                      index='category',\
+                      values='scientific_name')\\\
+                      .reset_index()\
+  \
+category_pivot.columns = ['category', 'not_protected', 'protected']\
+\
+category_pivot['percent_protected'] = category_pivot.protected / (category_pivot.protected + category_pivot.not_protected)\
+\
+print category_pivot\
+\
+\
+#Chi-Squared Test for Significance \
+from scipy.stats import chi2_contingency\
+\
+print ('Mammal and Bird')\
+contingency_mammal_bird = [[30, 146],\
+             							 [75, 413]]\
+pval = chi2_contingency(contingency_mammal_bird)[1]\
+print(pval) #pval output shows 0.6875948\
+\
+print ('Reptile and Mammal')\
+contingency_reptile_mammal = [[5, 73],\
+                             	[30, 146]]\
+pval_reptile_mammal = chi2_contingency(contingency_reptile_mammal)[1]\
+print(pval_reptile_mammal)\
+\
+print ('Vascular and Nonvascular Plants')\
+contingency_plants = [[5, 328],\
+                      [46, 4216]]\
+pval_plants= chi2_contingency(contingency_plants)[1]\
+print(pval_plants)\
+\
+print ('Mammal and Fish')\
+contingency_mammal_fish = [[30, 146],\
+                         	 [11, 115]]\
+pval_mammal_fish = chi2_contingency(contingency_mammal_fish)[1]\
+print(pval_mammal_fish)\
+\
+print ('Fish and Vascular Plant')\
+contingency_vplant_fish = [[46, 4216],\
+                         	 [11, 115]]\
+pval_vplant_fish = chi2_contingency(contingency_vplant_fish)[1]\
+print(pval_vplant_fish)\
+\
+print ('Fish and Nonvascular Plant')\
+contingency_nplant_fish = [[5, 328],\
+                         	 [11, 115]]\
+pval_nplant_fish = chi2_contingency(contingency_nplant_fish)[1]\
+print(pval_nplant_fish)\
+\
+print ('Reptile and Fish')\
+contingency_reptile_fish = [[5, 73],\
+                            [11, 115]]\
+pval_reptile_fish = chi2_contingency(contingency_reptile_fish)[1]\
+print(pval_reptile_fish)\
+\
+print ('Mammal and Vascular Plant')\
+contingency_vplant_mammal = [[46, 4216],\
+                         	 [30, 146]]\
+pval_vplant_mammal = chi2_contingency(contingency_vplant_mammal)[1]\
+print(pval_vplant_mammal)\
+\
+print ('Reptile and Vascular Plant')\
+contingency_vplant_reptile = [[46, 4216],\
+                         	 		[5, 73]]\
+pval_vplant_reptile = chi2_contingency(contingency_vplant_reptile)[1]\
+print(pval_vplant_reptile)\
+\
+print ('Mammal and Nonvascular Plant')\
+contingency_nplant_mammal = [[5, 328],\
+                         	 [11, 115]]\
+pval_nplant_mammal= chi2_contingency(contingency_nplant_mammal)[1]\
+print(pval_nplant_mammal)\
+\
+print ('Reptile and Nonvascular Plant')\
+contingency_nplant_reptile = [[5, 328],\
+                         	 		[5, 73]]\
+pval_nplant_reptile = chi2_contingency(contingency_nplant_reptile)[1]\
+print(pval_nplant_reptile)\
+\
+print ('Bird and Nonvascular Plant')\
+contingency_nplant_bird = [[5, 328],\
+                         	 [75, 413]]\
+pval_nplant_bird = chi2_contingency(contingency_nplant_bird)[1]\
+print(pval_nplant_bird)\
+\
+print ('Bird and Fish')\
+contingency_bird_fish = [[75, 413],\
+                         [11, 115]]\
+pval_bird_fish = chi2_contingency(contingency_bird_fish)[1]\
+print(pval_bird_fish)\
+\
+print ('Amphibian and Mammal')\
+contingency_amphibian_mammal = [[7, 72],\
+                             	[30, 146]]\
+pval_amphibian_mammal = chi2_contingency(contingency_amphibian_mammal)[1]\
+print(pval_amphibian_mammal)\
+\
+print ('Reptile and Amphibian')\
+contingency_reptile_amphibian = [[5, 73],\
+                             	[7, 72]]\
+pval_reptile_amphibian = chi2_contingency(contingency_reptile_amphibian)[1]\
+print(pval_reptile_amphibian)\
+\
+print ('Bird and Amphibian')\
+contingency_bird_amphibian = [[75, 413],\
+                             	[7, 72]]\
+pval_bird_amphibian = chi2_contingency(contingency_bird_amphibian)[1]\
+print(pval_bird_amphibian)\
+\
+print ('Nonvascular Plant and Amphibian')\
+contingency_nplant_amphibian = [[5, 328],\
+                             		[7, 72]]\
+pval_nplant_amphibian = chi2_contingency(contingency_nplant_amphibian)[1]\
+print(pval_nplant_amphibian)\
+\
+print ('Vascular Plant and Amphibian')\
+contingency_vplant_amphibian =[[46,4216],\
+                             	[7, 72]]\
+pval_vplant_amphibian = chi2_contingency(contingency_vplant_amphibian)[1]\
+print(pval_vplant_amphibian)\
+\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 ##Biodiversity Project Part 2\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 #Sheep Observations\
+\
+species = pd.read_csv('species_info.csv')\
+species.fillna('No Intervention', inplace = True)\
+species['is_protected'] = species.conservation_status != 'No Intervention'\
+\
+observations = pd.read_csv('observations.csv')\
+\
+species['is_sheep'] = species.common_names.apply(lambda x: 'Sheep' in x)\
+\
+species_is_sheep = species[species.is_sheep]\
+\
+sheep_species = species[(species.is_sheep) & (species.category == 'Mammal')]\
+\
+sheep_observations = observations.merge(sheep_species)\
+\
+print sheep_observations\
+print sheep_observations.head()\
+\
+obs_by_park = sheep_observations.groupby('park_name').observations.sum().reset_index()\
+\
+\
+\
+#Plotting Sheep Sightings \
+\
+plt.figure(figsize=(16, 4))\
+ax = plt.subplot()\
+plt.bar(range(len(obs_by_park)),\
+        obs_by_park.observations.values)\
+ax.set_xticks(range(len(obs_by_park)))\
+ax.set_xticklabels(obs_by_park.park_name.values)\
+plt.ylabel('Number of Observations')\
+plt.title('Observations of Sheep per Week')\
+plt.show()\
+\
+\
+\
+#Sample Size Determination \
+\
+baseline = 0.15\
+\
+minimum_detectable_effect = 100*5./15\
+\
+sample_size_per_variant = 870\
+\
+yellowstone_weeks_observing = sample_size_per_variant/507.\
+\
+bryce_weeks_observing = sample_size_per_variant/250.\
+\
+great_smoky_weeks_observing = sample_size_per_variant/149\
+\
+yosemite_weeks_observing = sample_size_per_variant/282\
+\
+print yellowstone_weeks_observing\
+print bryce_weeks_observing\
+print great_smoky_weeks_observing\
+print yosemite_weeks_observing\
+\
+\
+}
